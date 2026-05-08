@@ -19,10 +19,7 @@ function useAnimatedTotal(target) {
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(start + (end - start) * eased);
-
-      if (progress < 1) {
-        ref.current = requestAnimationFrame(animate);
-      }
+      if (progress < 1) ref.current = requestAnimationFrame(animate);
     });
 
     return () => cancelAnimationFrame(ref.current);
@@ -31,32 +28,42 @@ function useAnimatedTotal(target) {
   return display;
 }
 
-export default function Expenses() {
+export default function App() {
   const [expenses, setExpenses] = useState(() => {
     const saved = localStorage.getItem("expenses");
     return saved ? JSON.parse(saved) : [];
   });
-  const [filter, setFilter] = useState("all");
+  const [activeFilters, setActiveFilters] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("expenses", JSON.stringify(expenses));
   }, [expenses]);
 
   function addExpense(newExpense) {
-    setExpenses([
-      ...expenses,
-      { ...newExpense, amount: Number(newExpense.amount) },
-    ]);
+    setExpenses([...expenses, { ...newExpense, amount: Number(newExpense.amount) }]);
   }
 
   function deleteExpense(id) {
-    setExpenses(expenses.filter((expense) => expense.id !== id));
+    setExpenses(expenses.filter((e) => e.id !== id));
   }
 
+  function updatedExpense(updated) {
+    setExpenses(expenses.map((e) => (e.id === updated.id ? updated : e)));
+  }
+
+  function toggleFilter(cat) {
+    setActiveFilters((prev) =>
+      prev.includes(cat) ? prev.filter((f) => f !== cat) : [...prev, cat]
+    );
+  }
+
+  // Only show categories that exist in expenses, in order of first appearance
+  const usedCategories = [...new Set(expenses.map((e) => e.category))];
+
   const filteredExpenses =
-    filter === "all"
+    activeFilters.length === 0
       ? expenses
-      : expenses.filter((expense) => expense.category === filter);
+      : expenses.filter((e) => activeFilters.includes(e.category));
 
   const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const animatedTotal = useAnimatedTotal(total);
@@ -67,23 +74,27 @@ export default function Expenses() {
         <h1>Hello</h1>
         <p className="total">Total: ${animatedTotal.toFixed(2)}</p>
       </div>
-      <div className="expense-tracker">
-        <select
-          className="filter-select"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">all</option>
-          <option value="food">Food</option>
-          <option value="transport">transport</option>
-          <option value="entertainment">entertainment</option>
-          <option value="other">other</option>
-        </select>
-      </div>
+
       <ExpenseForm addExpense={addExpense} />
+
+      {usedCategories.length > 0 && (
+        <div className="filter-tags">
+          {usedCategories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => toggleFilter(cat)}
+              className={`filter-tag ${activeFilters.includes(cat) ? "active" : ""}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       <ExpenseList
         filteredExpenses={filteredExpenses}
         deleteExpense={deleteExpense}
+        updatedExpense={updatedExpense}
       />
     </>
   );

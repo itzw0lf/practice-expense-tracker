@@ -150,6 +150,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
+  margin-bottom: 12px; /* ← added margin */
   transition: border-color 0.2s;
 }
 
@@ -197,6 +198,7 @@ h1 {
   font-size: 0.8rem;
   padding: 4px 10px;
   transition: all 0.2s;
+  margin-left: 10px;
 }
 
 .expense-item .delete-btn:hover {
@@ -213,4 +215,79 @@ input[type="number"]::-webkit-outer-spin-button {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+/* Filter Tags */
+.filter-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filter-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: "DM Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 5px 14px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  animation: fadeIn 0.3s ease;
+}
+
+.filter-tag.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f0f11;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Edit mode */
+.expense-item.editing {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expense-item .edit-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  outline: none;
+  flex: 1;
+  min-width: 80px;
+}
+
+.expense-item .edit-input.amount {
+  max-width: 100px;
+}
+
+.expense-item .edit-input:focus {
+  border-color: var(--accent);
+}
+
+.expense-item select.edit-input {
+  flex: 1;
+  min-width: 80px;
+}
+
+.delete-btn.save {
+  border-color: var(--accent);
+  color: var(--accent);
 }

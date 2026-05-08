@@ -1,12 +1,15 @@
-import ExpenseItem from './ExpenseItem.jsx'
+import ExpenseCard from './ExpenseCard.jsx'
 
-export default function ExpenseList({ filteredExpenses, deleteExpense }) {
+export default function ExpenseList({ filteredExpenses, deleteExpense, updatedExpense }) {
   return (
     <>
-      {filteredExpenses.map((filteredExpense, index) => (
-        <div className="expense-list" key={filteredExpense.id}>
-            <ExpenseItem expense={filteredExpense} deleteExpense={deleteExpense}/>
-
+      {filteredExpenses.map((expense) => (
+        <div className="expense-list" key={expense.id}>
+          <ExpenseCard
+            expense={expense}
+            deleteExpense={deleteExpense}
+            updatedExpense={updatedExpense}
+          />
         </div>
       ))}
     </>
